@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
@@ -43,9 +46,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+        ex.printStackTrace(); // temporal
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 List.of("Ocurrió un error inesperado"));
     }
+
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, List<String> messages) {
         ErrorResponse error = ErrorResponse.builder()
@@ -55,5 +60,8 @@ public class GlobalExceptionHandler {
                 .messages(messages)
                 .build();
         return ResponseEntity.status(status).body(error);
+
+
     }
+
 }
