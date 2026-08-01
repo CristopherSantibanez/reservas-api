@@ -39,11 +39,15 @@ public class AvailabilityService {
                 .toList();
 
         List<CourtAvailabilityResponse> slots = new ArrayList<>();
-        LocalTime currentStart = OPENING_TIME;
 
-        while (currentStart.plusMinutes(SLOT_DURATION_MINUTES).compareTo(CLOSING_TIME) <= 0) {
-            final LocalTime slotStart = currentStart;
-            final LocalTime slotEnd = currentStart.plusMinutes(SLOT_DURATION_MINUTES);
+        int openingMinutes = OPENING_TIME.toSecondOfDay() / 60;
+        int closingMinutes = CLOSING_TIME.toSecondOfDay() / 60;
+        int currentMinutes = openingMinutes;
+
+        while (currentMinutes + SLOT_DURATION_MINUTES <= closingMinutes) {
+
+            final LocalTime slotStart = LocalTime.ofSecondOfDay(currentMinutes * 60L);
+            final LocalTime slotEnd = LocalTime.ofSecondOfDay((currentMinutes + SLOT_DURATION_MINUTES) * 60L);
 
             boolean occupied = reservations.stream().anyMatch(r ->
                     slotStart.isBefore(r.getEndTime()) && slotEnd.isAfter(r.getStartTime())
@@ -55,7 +59,7 @@ public class AvailabilityService {
                     .available(!occupied)
                     .build());
 
-            currentStart = slotEnd;
+            currentMinutes += SLOT_DURATION_MINUTES;
         }
 
         return slots;
