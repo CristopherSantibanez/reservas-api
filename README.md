@@ -12,6 +12,7 @@ Este proyecto fue desarrollado como pieza de portfolio técnico, con énfasis en
 - [Desafío técnico central](#desafío-técnico-central)
 - [Instalación y ejecución](#instalación-y-ejecución)
 - [Documentación de la API](#documentación-de-la-api)
+- [Pruebas automatizadas](#pruebas-automatizadas)
 - [Interfaz de pruebas](#interfaz-de-pruebas)
 - [Decisiones técnicas](#decisiones-técnicas)
 - [Mejoras pendientes](#mejoras-pendientes)
@@ -34,11 +35,12 @@ Este proyecto fue desarrollado como pieza de portfolio técnico, con énfasis en
 | Categoría | Tecnología |
 |---|---|
 | Lenguaje | Java 17 |
-| Framework | Spring Boot 3.x |
+| Framework | Spring Boot 4.1.0 |
 | Seguridad | Spring Security, JWT (jjwt) |
 | Persistencia | Spring Data JPA / Hibernate |
 | Base de datos | PostgreSQL 16 |
 | Migraciones | Flyway |
+| Documentación de API | springdoc-openapi (Swagger UI) |
 | Gestión de dependencias | Maven |
 | Contenedores | Docker, Docker Compose |
 | Utilidades | Lombok, Jakarta Validation |
@@ -162,6 +164,16 @@ jwt.expiration-ms=86400000
 
 ## Documentación de la API
 
+La API cuenta con documentación interactiva generada automáticamente mediante springdoc-openapi. Con la aplicación en ejecución, está disponible en:
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+Desde ahí es posible explorar todos los endpoints, consultar sus contratos de entrada y salida, y ejecutarlos directamente. Para probar endpoints protegidos, se debe utilizar el botón **Authorize** e ingresar el token JWT obtenido desde `/auth/login` o `/auth/register`.
+
+La especificación OpenAPI en formato JSON se encuentra en `/v3/api-docs`.
+
 ### Autenticación
 
 | Método | Endpoint | Descripción | Autenticación |
@@ -209,6 +221,16 @@ Si el horario solicitado ya se encuentra ocupado, la API responde con estado `40
 }
 ```
 
+## Pruebas automatizadas
+
+El proyecto incluye pruebas unitarias sobre la lógica de negocio, con especial foco en `ReservationService`, dado que allí reside la validación de solapamiento de horarios que constituye el aspecto más crítico del dominio.
+
+Para ejecutar la suite de pruebas:
+
+```bash
+./mvnw test
+```
+
 ## Interfaz de pruebas
 
 El repositorio incluye un panel de pruebas en `frontend-test/index.html`, desarrollado en HTML y JavaScript sin dependencias externas ni proceso de build, destinado a facilitar la interacción manual con la API.
@@ -233,8 +255,7 @@ Este panel constituye una herramienta de desarrollo y control de calidad; no rep
 
 Las siguientes mejoras han sido identificadas pero aún no implementadas. Se documentan de forma explícita como parte del alcance definido para esta versión del proyecto:
 
-- Suite de pruebas unitarias (`ReservationService`, lógica de solapamiento) y de integración (`@SpringBootTest`)
-- Documentación interactiva de la API mediante Swagger/OpenAPI
+- Pruebas de integración adicionales (`@SpringBootTest`) que cubran el ciclo completo de autenticación y reserva
 - Endpoints administrativos (`/admin/reservations`) para el rol `ADMIN`
 - Externalización de credenciales y de la clave `jwt.secret` a variables de entorno (actualmente definidas en `application.properties` por simplicidad en el entorno de desarrollo local)
 - Paginación en los listados de reservas
